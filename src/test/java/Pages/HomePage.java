@@ -44,14 +44,6 @@ public class HomePage {
     // Find Elements
     @FindBy (xpath = "//div[contains(@class, 'sc-cffe1c5-0 bKBPyH')]")
     WebElement categoryList;
-//    @FindBy (xpath = "//div[contains(@class, 'sc-e6fb8ae7-3 kLhGA-D')]")
-//    WebElement productPriceInfor;
-//    @FindBy (xpath = "//div[contains(@class, 'product-price__current-price')]")
-//    WebElement currentPrice;
-//    @FindBy (xpath = "//div[contains(@class, 'product-price__discount-rate')]")
-//    WebElement discountRate;
-//    @FindBy (xpath = "//div[contains(@class, 'product-price__original-price')]")
-//    WebElement originalPrice;
 
     // Select Category Action
     public CategoryPage selectCategory (String categoryName)

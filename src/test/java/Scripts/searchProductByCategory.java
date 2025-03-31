@@ -27,7 +27,9 @@ public class searchProductByCategory extends BaseTest {
     public void testSelectProduct ()
     {
         testSelectByCategory();
-        productDetailPage = subCategoryPage.selectProductFromCategory("Tai nghe chụp tai không dây Remax RB-660HB - Hàng chính hãng");
-        Assert.assertTrue(productDetailPage.isDisplayed("Tai nghe chụp tai không dây Remax RB-660HB - Hàng chính hãng"));
+        productDetailPage = subCategoryPage.selectProductFromCategory("Tai Nghe Nhét Tai Langsdom Super Bass JM26");
+        Assert.assertTrue(productDetailPage.isDisplayed("Tai Nghe Nhét Tai Langsdom Super Bass JM26"));
+        Assert.assertTrue(productDetailPage.isPriceCorrectly());
+//        Assert.assertTrue(productDetailPage.isDiscountRateCorrect());
     }
 }
