@@ -1,13 +1,17 @@
 package Pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 
 public class ProductDetailPage {
@@ -43,6 +47,27 @@ public class ProductDetailPage {
     WebElement priceOriginal;
     @FindBy (xpath = "//div[contains(@class, 'sc-596b3c2b-1 iFCUnH')]//strong")
     List<WebElement> discountValues;
+    @FindBy (xpath = "//div[contains(@aria-describedby, 'popup-1')]//picture[contains(@class, 'webpimg-container')]")
+    WebElement priceMoreInforButton;
+    @FindBy (xpath = "//div[text() = 'Giá gốc']//following-sibling::div")
+    WebElement popupOriginalPrice;
+    @FindBy (xpath = "//div[contains(text(),'Giá bán')]/ancestor::div[contains(@class, 'info')]/div[contains(@class, 'info__price')]")
+    WebElement popupPriceFromSeller;
+    @FindBy (xpath = "//div[contains(text(),'Giá sau áp dụng mã khuyến mãi')]/ancestor::div[contains(@class, 'info')]/div[contains(@class, 'info__price')]")
+    WebElement popupPriceAfterDiscount;
+
+    // Instance variables to store extracted prices
+    public String currentPrice;
+    public String discountRate;
+    public String originalPrice;
+
+    // Popup value
+    public String popupBase;
+    public String popupSeller;
+    public String popupFinal;
+
+    // Result from test
+    public boolean isProductHasVoucher;
 
     // Get Price from Element
     public String getTextFromElement (WebElement element)
@@ -57,27 +82,30 @@ public class ProductDetailPage {
     }
 
     // Loại bỏ các kí hiệu . đ trong giá, biến String thành Integer
-    public int normalizePrice (String priceText)
-    {
+    public int normalizePrice(String priceText) {
+        if (priceText == null || priceText.isEmpty()) {
+            System.out.println("Warning: Price text is null or empty!");
+            return 0; // Default value
+        }
         return Integer.parseInt(priceText.replaceAll("[^\\d]", ""));
     }
 
-
-    public boolean isPriceCorrectly ()
+    // Check coi product có discount không
+    public boolean isProductDiscount ()
     {
-        String currentPrice = getTextFromElement(priceCurrent);
+        currentPrice = getTextFromElement(priceCurrent);
         // Check co khuyen mai hay khong
         boolean isDiscount = !driver.findElements(By.xpath("//div[contains(@class, 'product-price__discount-rate')]")).isEmpty();
         boolean isOriginalDisplayed = !driver.findElements(By.xpath("//div[contains(@class, 'product-price__original-price')]")).isEmpty();
 
-        String discountRate = "";
+        discountRate = "";
         if (isDiscount) {
             discountRate = getTextFromElement(rateofDiscount);
         } else {
             discountRate = "0%";
         }
 
-        String originalPrice = "";
+        originalPrice = "";
         if (isOriginalDisplayed) {
             originalPrice = getTextFromElement(priceOriginal);
         } else {
@@ -85,58 +113,115 @@ public class ProductDetailPage {
         }
 
         // Check price hien thi sau khi getText dung khong
-        System.out.println("Current Price: " +currentPrice);
+        System.out.println("Current Price: " + currentPrice);
         System.out.println("Discount Rate: " + discountRate);
         System.out.println("Original Price: " + originalPrice);
 
         if (!isDiscount && !isOriginalDisplayed)
         {
             System.out.println("No discount applied, current price is correct");
-            return true;
+            return false;
         } else
         {
-            // Lấy số tiền được giảm cho từng voucher
-            int totalDiscount = 0;
-            for (WebElement discountMoney : discountValues)
-            {
-                totalDiscount = totalDiscount + normalizePrice(discountMoney.getText().trim());
-            }
-
-            // Thực hiện tính toán Final Price
-            int finalPrice = normalizePrice(currentPrice);
-            int basePrice = normalizePrice(originalPrice);
-            int expectedFinalPrice = basePrice - totalDiscount;
-            System.out.println("Expected: " + expectedFinalPrice);
-            boolean isFinalPriceCountedCorrect = (expectedFinalPrice == finalPrice);
-            System.out.println("Price is counting correctly with promo: " + isFinalPriceCountedCorrect);
-            return isFinalPriceCountedCorrect;
+            System.out.println("Product has discount");
+            return true;
         }
     }
 
-    public boolean isDiscountRateCorrect () {
-        String currentPrice = getTextFromElement(priceCurrent);
-        String discountRate = getTextFromElement(rateofDiscount);
-        String originalPrice = getTextFromElement(priceOriginal);
 
-        // Check price hien thi sau khi getText dung khong
-        System.out.println("Current Price: " + currentPrice);
-        System.out.println("Discount Rate: " + discountRate);
-        System.out.println("Original Price: " + originalPrice);
-        // Thực hiện tính toán Final Price
-        int totalDiscount = 0;
-        for (WebElement discountMoney : discountValues) {
-            totalDiscount = totalDiscount + normalizePrice(discountMoney.getText().trim());
-        }
-
-        // Thực hiện tính toán Final Price
+    // Check discount rate tính đúng không
+    public boolean isDiscountRateCorrect ()
+    {
         int finalPrice = normalizePrice(currentPrice);
         int basePrice = normalizePrice(originalPrice);
         int discountPercent = normalizePrice(discountRate);
         int expectedDiscountRate = (int) Math.round((1 - (finalPrice / (double) basePrice)) * 100);
         System.out.println("Expected: " + expectedDiscountRate);
-        boolean isDiscountRateCorrect = (expectedDiscountRate == discountPercent);
-        System.out.println("Discount Rate is counting correctly: " + isDiscountRateCorrect);
-        return isDiscountRateCorrect;
+        if (expectedDiscountRate == discountPercent)
+        {
+            return true;
+        } else {
+            System.out.println("Discount Percent incorrect");
+            return false;
+        }
+    }
+
+    public boolean isProductHasVoucher ()
+    {
+        isProductHasVoucher = !driver.findElements(By.xpath("//div[contains(@class, 'sc-596b3c2b-1 iFCUnH')]")).isEmpty();
+        if (isProductHasVoucher)
+        {
+            System.out.println("Product Has Voucher");
+            return true;
+        } else
+        {
+            System.out.println("Product Has No Voucher");
+            return false;
+        }
+    }
+
+    public void viewDetailPrice ()
+    {
+        try {
+            Actions clickPopup = new Actions(driver);
+            clickPopup.moveToElement(priceMoreInforButton).click().perform();
+            Thread.sleep(3000);
+        } catch (Exception e)
+        {
+            System.out.println("Failed to view Popup" + e.getMessage());
+        }
+    }
+
+    public boolean isPriceConsistency ()
+    {
+            // Get Text tu Popup
+            popupBase = getTextFromElement(popupOriginalPrice);
+            popupSeller = getTextFromElement(popupPriceFromSeller);
+            popupFinal = "";
+            if (isProductHasVoucher()) {
+                popupFinal = getTextFromElement(popupPriceAfterDiscount);
+            } else {
+                popupFinal = popupSeller;
+            }
+
+            // In ra console de check
+            System.out.println("Popup Original Price: " + popupBase);
+            System.out.println("Popup Seller Price: " + popupSeller);
+            System.out.println("Popup Final Price: " + popupFinal);
+
+
+        if (popupBase.equals(originalPrice) && popupFinal.equals(currentPrice))
+            {
+                System.out.println("Price consistency");
+                return true;
+            } else {
+                System.out.println("Mismatch Price");
+                return false;
+            }
+        }
+
+    public boolean isPriceCountedCorrect ()
+    {
+        // Lấy số tiền được giảm cho từng voucher
+        int totalDiscount = 0;
+        for (WebElement discountMoney : discountValues)
+        {
+            totalDiscount = totalDiscount + normalizePrice(discountMoney.getText().trim());
+        }
+
+        // Thực hiện tính toán Final Price
+        int finalPrice = normalizePrice(currentPrice);
+        int popupSellPrice = normalizePrice(popupSeller);
+        int expectedPrice = popupSellPrice - totalDiscount;
+        if (expectedPrice == finalPrice)
+        {
+            System.out.println("Price is counted Correctly");
+            return true;
+        } else
+        {
+            System.out.println("Price is counted incorrect");
+            return false;
+        }
     }
 
 }
