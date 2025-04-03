@@ -38,37 +38,6 @@ public class ProductDetailPage {
         }
     }
 
-    // Find Elements -> Cái này chỉ hoạt động khi Element tồn tại trên Web
-    @FindBy (xpath = "//div[contains(@class, 'product-price__current-price')]")
-    WebElement priceCurrent;
-    @FindBy (xpath = "//div[contains(@class, 'product-price__discount-rate')]")
-    WebElement rateofDiscount;
-    @FindBy (xpath = "//div[contains(@class, 'product-price__original-price')]")
-    WebElement priceOriginal;
-    @FindBy (xpath = "//div[contains(@class, 'sc-596b3c2b-1 iFCUnH')]//strong")
-    List<WebElement> discountValues;
-    @FindBy (xpath = "//div[contains(@aria-describedby, 'popup-1')]//picture[contains(@class, 'webpimg-container')]")
-    WebElement priceMoreInforButton;
-    @FindBy (xpath = "//div[text() = 'Giá gốc']//following-sibling::div")
-    WebElement popupOriginalPrice;
-    @FindBy (xpath = "//div[contains(text(),'Giá bán')]/ancestor::div[contains(@class, 'info')]/div[contains(@class, 'info__price')]")
-    WebElement popupPriceFromSeller;
-    @FindBy (xpath = "//div[contains(text(),'Giá sau áp dụng mã khuyến mãi')]/ancestor::div[contains(@class, 'info')]/div[contains(@class, 'info__price')]")
-    WebElement popupPriceAfterDiscount;
-
-    // Instance variables to store extracted prices
-    public String currentPrice;
-    public String discountRate;
-    public String originalPrice;
-
-    // Popup value
-    public String popupBase;
-    public String popupSeller;
-    public String popupFinal;
-
-    // Result from test
-    public boolean isProductHasVoucher;
-
     // Get Price from Element
     public String getTextFromElement (WebElement element)
     {
@@ -89,6 +58,21 @@ public class ProductDetailPage {
         }
         return Integer.parseInt(priceText.replaceAll("[^\\d]", ""));
     }
+
+    // Product Detail Elements -> Cái này chỉ hoạt động khi Element tồn tại trên Web
+    @FindBy (xpath = "//div[contains(@class, 'product-price__current-price')]")
+    WebElement priceCurrent;
+    @FindBy (xpath = "//div[contains(@class, 'product-price__discount-rate')]")
+    WebElement rateofDiscount;
+    @FindBy (xpath = "//div[contains(@class, 'product-price__original-price')]")
+    WebElement priceOriginal;
+    @FindBy (xpath = "//div[contains(@class, 'sc-596b3c2b-1 iFCUnH')]//strong")
+    List<WebElement> discountValues;
+
+    // Instance variables to store extracted prices
+    public String currentPrice;
+    public String discountRate;
+    public String originalPrice;
 
     // Check coi product có discount không
     public boolean isProductDiscount ()
@@ -148,7 +132,7 @@ public class ProductDetailPage {
 
     public boolean isProductHasVoucher ()
     {
-        isProductHasVoucher = !driver.findElements(By.xpath("//div[contains(@class, 'sc-596b3c2b-1 iFCUnH')]")).isEmpty();
+        boolean isProductHasVoucher = !driver.findElements(By.xpath("//div[contains(@class, 'sc-596b3c2b-1 iFCUnH')]")).isEmpty();
         if (isProductHasVoucher)
         {
             System.out.println("Product Has Voucher");
@@ -159,6 +143,9 @@ public class ProductDetailPage {
             return false;
         }
     }
+
+    @FindBy (xpath = "//div[contains(@aria-describedby, 'popup-1')]//picture[contains(@class, 'webpimg-container')]")
+    WebElement priceMoreInforButton;
 
     public void viewDetailPrice ()
     {
@@ -172,13 +159,26 @@ public class ProductDetailPage {
         }
     }
 
+    // Pop-up elements
+    @FindBy (xpath = "//div[text() = 'Giá gốc']//following-sibling::div")
+    WebElement popupOriginalPrice;
+    @FindBy (xpath = "//div[contains(text(),'Giá bán')]/ancestor::div[contains(@class, 'info')]/div[contains(@class, 'info__price')]")
+    WebElement popupPriceFromSeller;
+    @FindBy (xpath = "//div[contains(text(),'Giá sau áp dụng mã khuyến mãi')]/ancestor::div[contains(@class, 'info')]/div[contains(@class, 'info__price')]")
+    WebElement popupPriceAfterDiscount;
+
+    // Popup value
+    public String popupBase;
+    public String popupSeller;
+    public String popupFinal;
+
     public boolean isPriceConsistency ()
     {
             // Get Text tu Popup
             popupBase = getTextFromElement(popupOriginalPrice);
             popupSeller = getTextFromElement(popupPriceFromSeller);
             popupFinal = "";
-            if (isProductHasVoucher()) {
+            if (isProductHasVoucher ()) {
                 popupFinal = getTextFromElement(popupPriceAfterDiscount);
             } else {
                 popupFinal = popupSeller;

@@ -51,7 +51,7 @@ public class SubCategoryPage {
             return new ProductDetailPage(driver);
         } catch (Exception e)
         {
-            System.out.println("That Bai 4" + e.getMessage());
+            System.out.println("Failed in Select product from SubCategory" + e.getMessage());
             return null;
         }
 

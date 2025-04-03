@@ -36,7 +36,7 @@ public class HomePage {
             return new SearchResultPage(driver);
         } catch (Exception e)
         {
-            System.out.println("That Bai 1" + e.getMessage());
+            System.out.println("Failed to Perform Search" + e.getMessage());
             return null;
         }
     }
@@ -56,7 +56,27 @@ public class HomePage {
             return new CategoryPage(driver);
         } catch (Exception e)
         {
-            System.out.println("That Bai 2" + e.getMessage());
+            System.out.println("Failed to Select Category" + e.getMessage());
+            return null;
+        }
+    }
+
+    // Find Elements
+    @FindBy (xpath = "//div[contains(@class, 'sc-18abacb4-0 drjfpe')]")
+    WebElement promotionTabs;
+
+    // Select Tiki Trading
+    public TikiTradingPage selectDealsCategoryNavBar (String promotionTab)
+    {
+        try {
+            WebElement promotionOption = promotionTabs.findElement(By.xpath(".//div[text() = '" + promotionTab + "']"));
+            Actions select = new Actions(driver);
+            select.moveToElement(promotionOption).click().perform();
+            Thread.sleep(5000);
+            return new TikiTradingPage(driver);
+        } catch (Exception e)
+        {
+            System.out.println("Failed to select Promotion Tab" + e.getMessage());
             return null;
         }
     }
