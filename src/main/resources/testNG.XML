@@ -1,7 +1,39 @@
 <suite name = "Test Suite">
-    <test name = "Test" >
+<!--    <test name = "Test Safari" >-->
+<!--        <parameter name = "browser" value = "Safari"/>-->
+<!--        <classes>-->
+<!--            <class name="Scripts.searchProduct">-->
+<!--                <methods>-->
+<!--                    <include name="testSearchProduct01"/>-->
+<!--                    <include name="testSearchProduct02"/>-->
+<!--                </methods>-->
+<!--            </class>-->
+<!--&lt;!&ndash;            <class name = "Scripts.searchProductByCategory"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            <method>&ndash;&gt;-->
+<!--&lt;!&ndash;                <include name = "testSelectProduct01"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                <include name = "testSelectProduct02"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                <include name = "testSelectProduct03"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            </method>&ndash;&gt;-->
+<!--&lt;!&ndash;            <class name = "Scripts.searchPromotionProduct"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            <method>&ndash;&gt;-->
+<!--&lt;!&ndash;                <include name = "testSelectProduct01"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                <include name = "testSelectProduct02"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                <include name = "testDetailInfor01"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                <include name = "testDetailInfor02"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            </method>&ndash;&gt;-->
+<!--        </classes>-->
+<!--    </test>-->
+
+    <test name="Test Chrome">
+        <parameter name="browser" value="Chrome"/>
         <classes>
-            <class name = "Scripts.searchProduct"/>
+            <class name="Scripts.searchProduct">
+                <methods>
+                    <include name="testSearchProduct01"/>
+                    <include name="testSearchProduct02"/>
+                </methods>
+            </class>
         </classes>
     </test>
+
 </suite>

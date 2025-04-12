@@ -17,7 +17,7 @@ public class searchProduct extends BaseTest {
     SearchResultPage searchResultPage;
     // Search By Search Box
     @Test
-    public void testSearchProductAdidas () {
+    public void testSearchProduct01 () {
         homePage = new HomePage(driver);
         searchResultPage = homePage.searchAction("adidas");
         logger.info("Search Xong");
@@ -26,14 +26,12 @@ public class searchProduct extends BaseTest {
     }
 
     @Test
-    public void testSearchProductSamsung () {
+    public void testSearchProduct02 () {
         homePage = new HomePage(driver);
         searchResultPage = homePage.searchAction("samsung");
         Assert.assertTrue(searchResultPage.isDisplayed("samsung"));
         Assert.assertTrue(searchResultPage.hasKeyword("samsung"));
     }
-
-
 
 }
 
