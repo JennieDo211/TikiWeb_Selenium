@@ -20,7 +20,7 @@ public class searchProduct extends BaseTest {
     public void testSearchProduct01 () {
         homePage = new HomePage(driver);
         searchResultPage = homePage.searchAction("adidas");
-        logger.info("Search Xong");
+        logger.info("Search OK");
         Assert.assertTrue(searchResultPage.isDisplayed("adidas"));
         Assert.assertTrue(searchResultPage.hasKeyword("adidas"));
     }
